@@ -17,7 +17,6 @@ jobs:
     - name: Instalar dependencias del sistema
        run: |
     sudo apt-get update
-    # Instala libtinfo6 y crea un enlace simbólico para libtinfo5
     sudo apt-get install -y libtinfo6
     sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
         sudo apt-get install -y \
