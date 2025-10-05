@@ -1,0 +1,337 @@
+#:kivy 2.0.0
+#:import MDNavigationDrawer kivymd.uix.navigationdrawer.MDNavigationDrawer
+#:import OneLineListItem kivymd.uix.list.OneLineListItem
+
+<CustomNavigationDrawer>:
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "15dp"
+        padding: "20dp"
+        size_hint_x: 0.7
+
+        MDLabel:
+            text: "Menu Principal"
+            font_style: "H5"
+            size_hint_y: None
+            height: self.texture_size[1]
+            halign: "center"
+            theme_text_color: "Primary"
+
+        OneLineListItem:
+            text: "Ver Catalogo"
+            on_release: 
+                root.set_state("close")
+                app.root.current = "catalogo"
+
+        OneLineListItem:
+            text: "Acceso Administrador"
+            on_release: 
+                root.set_state("close")
+                app.root.current = "login"
+
+        OneLineListItem:
+            text: "Informacion de la App"
+            on_release: 
+                root.set_state("close")
+                app.root.current = "about"
+
+        OneLineListItem:
+            text: "Salir"
+            on_release: 
+                root.set_state("close")
+                app.root.current = "menu"
+
+<MenuScreen>:
+    canvas.before:
+        Color:
+            rgba: 0.96, 0.87, 0.7, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: "40dp"
+        spacing: "25dp"
+        
+        MDLabel:
+            text: "Catalogo de Tatuajes AzojuanitoP41"
+            font_style: "H4"
+            halign: "center"
+            size_hint_y: 0.3
+            theme_text_color: "Primary"
+        
+        MDRaisedButton:
+            text: 'Ver Catalogo'
+            font_size: '18sp'
+            size_hint_y: None
+            height: '60dp'
+            on_release: root.manager.current = 'catalogo'
+        
+        MDRaisedButton:
+            text: 'Acceso Admin'
+            font_size: '18sp'
+            size_hint_y: None
+            height: '60dp'
+            on_release: root.manager.current = 'login'
+
+<LoginScreen>:
+    canvas.before:
+        Color:
+            rgba: 0.96, 0.87, 0.7, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: "40dp"
+        spacing: "20dp"
+        
+        MDLabel:
+            text: "Acceso Administrador"
+            font_style: "H4"
+            halign: "center"
+            size_hint_y: None
+            height: "60dp"
+            theme_text_color: "Primary"
+        
+        MDTextField:
+            id: usuario_input
+            hint_text: "Email"
+            size_hint_y: None
+            height: "50dp"
+            mode: "fill"
+            fill_color: 1, 1, 1, 0.9
+        
+        MDTextField:
+            id: password_input
+            hint_text: "Contraseña"
+            password: True
+            size_hint_y: None
+            height: "50dp"
+            mode: "fill"
+            fill_color: 1, 1, 1, 0.9
+        
+        MDRaisedButton:
+            text: 'Ingresar'
+            size_hint_y: None
+            height: '50dp'
+            on_release: root.verificar_login(usuario_input.text, password_input.text)
+        
+        MDFlatButton:
+            text: 'Volver al Menu'
+            size_hint_y: None
+            height: '50dp'
+            on_release: root.manager.current = 'menu'
+
+<CatalogoScreen>:
+    search_input: search_input
+    
+    canvas.before:
+        Color:
+            rgba: 0.98, 0.92, 0.84, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        
+        MDTopAppBar:
+            title: "Catalogo AzojuanitoP41"
+            elevation: 8
+            left_action_items: [['menu', lambda x: root.toggle_nav_drawer()]]
+            md_bg_color: 0.9, 0.4, 0.1, 1
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: "80dp"
+            padding: "15dp"
+            spacing: "5dp"
+            
+            MDLabel:
+                text: "Bienvenido al Catalogo de Tatuajes"
+                font_style: "H6"
+                halign: "center"
+                size_hint_y: None
+                height: self.texture_size[1]
+                theme_text_color: "Primary"
+                
+            MDLabel:
+                text: "Estudio AzojuanitoP41 - Encuentra tu diseño perfecto"
+                font_style: "Subtitle1"
+                theme_text_color: "Secondary"
+                halign: "center"
+                size_hint_y: None
+                height: self.texture_size[1]
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: "60dp"
+            padding: "15dp"
+            spacing: "15dp"
+            
+            MDTextField:
+                id: search_input
+                hint_text: "Buscar tatuajes por nombre..."
+                size_hint_x: 0.75
+                on_text_validate: root.buscar_tatuajes()
+                mode: "fill"
+                fill_color: 1, 1, 1, 0.9
+            
+            MDRaisedButton:
+                text: 'BUSCAR'
+                size_hint_x: 0.25
+                on_release: root.buscar_tatuajes()
+        
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            
+            GridLayout:
+                id: grid_tatuajes
+                cols: 2
+                spacing: "20dp"
+                padding: "20dp"
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: "400dp"
+                col_default_width: "300dp"
+    
+    CustomNavigationDrawer:
+        id: nav_drawer
+
+<AdminScreen>:
+    canvas.before:
+        Color:
+            rgba: 0.96, 0.87, 0.7, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: "15dp"
+        
+        MDLabel:
+            text: "Panel de Administracion"
+            font_style: "H4"
+            halign: "center"
+            size_hint_y: 0.08
+            theme_text_color: "Primary"
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.1
+            spacing: "10dp"
+            
+            MDRaisedButton:
+                text: 'Agregar Tatuaje'
+                on_release: root.mostrar_popup_anadir_tatuaje()
+            
+            MDRaisedButton:
+                text: 'Gestionar Categorias'
+                on_release: root.mostrar_popup_gestion_categorias()
+            
+            MDFlatButton:
+                text: 'Cerrar Sesion'
+                on_release: root.manager.current = 'menu'
+        
+        MDLabel:
+            text: "Tatuajes Existentes:"
+            font_style: "H6"
+            size_hint_y: 0.05
+            theme_text_color: "Primary"
+        
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            
+            GridLayout:
+                id: grid_admin_tatuajes
+                cols: 1
+                spacing: "10dp"
+                padding: "10dp"
+                size_hint_y: None
+                height: self.minimum_height
+
+<AboutScreen>:
+    canvas.before:
+        Color:
+            rgba: 0.96, 0.87, 0.7, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: "25dp"
+        spacing: "20dp"
+        
+        MDLabel:
+            text: "Informacion de la App"
+            font_style: "H4"
+            halign: "center"
+            size_hint_y: None
+            height: self.texture_size[1]
+            theme_text_color: "Primary"
+        
+        ScrollView:
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: "20dp"
+                size_hint_y: None
+                height: self.minimum_height
+                padding: "10dp"
+                
+                MDLabel:
+                    text: "Catalogo de Tatuajes v1.0.0"
+                    font_style: "H5"
+                    halign: "center"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    
+                MDLabel:
+                    text: "Desarrollado para: Estudio AzojuanitoP41"
+                    font_style: "Body1"
+                    halign: "center"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    
+                MDLabel:
+                    text: "Soporte Tecnico:"
+                    font_style: "H6"
+                    halign: "center"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                
+                MDRaisedButton:
+                    text: "Contactar por WhatsApp"
+                    size_hint_y: None
+                    height: "50dp"
+                    on_release: root.abrir_whatsapp_soporte()
+                    md_bg_color: 0.12, 0.65, 0.34, 1
+                
+                MDLabel:
+                    text: "Caracteristicas:"
+                    font_style: "H6"
+                    halign: "center"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                
+                MDLabel:
+                    text: "- Catalogo online de tatuajes\n- Gestion administrativa\n- Sistema de descuentos\n- Contacto directo via WhatsApp"
+                    font_style: "Body1"
+                    halign: "center"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    line_height: 1.5
+        
+        MDRaisedButton:
+            text: "Volver al Menu"
+            size_hint_y: None
+            height: "50dp"
+            on_release: root.manager.current = 'menu'
