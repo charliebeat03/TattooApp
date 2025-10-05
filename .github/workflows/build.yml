@@ -13,27 +13,60 @@ jobs:
     
     steps:
     - name: Checkout código
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Instalar dependencias del sistema
       run: |
         sudo apt-get update
+        # Solucionar problema de libtinfo5 en Ubuntu 24.04
         sudo apt-get install -y libtinfo6
         sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev automake
+        
+        # Instalar todas las dependencias necesarias :cite[6]
+        sudo apt-get install -y \
+          git \
+          zip \
+          unzip \
+          openjdk-17-jdk \
+          python3-pip \
+          autoconf \
+          libtool \
+          pkg-config \
+          zlib1g-dev \
+          libncurses5-dev \
+          libncursesw5-dev \
+          cmake \
+          libffi-dev \
+          libssl-dev \
+          automake \
+          wget
 
-    - name: Aceptar licencias de Android SDK
+    - name: Instalar herramientas de línea de comandos de Android SDK
       run: |
         mkdir -p ~/.android
         touch ~/.android/repositories.cfg
-        yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+        
+        # Descargar e instalar commandlinetools :cite[6]
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+        mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
+        unzip -q cmdline-tools.zip -d ~/.buildozer/android/platform/android-sdk/cmdline-tools/
+        mv ~/.buildozer/android/platform/android-sdk/cmdline-tools/cmdline-tools ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest
+
+    - name: Aceptar licencias de Android SDK automáticamente
+      run: |
+        # Aceptar todas las licencias necesarias :cite[6]
+        yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+        
+        # Instalar build-tools específicos para evitar error "Aidl not found"
+        ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" "platforms;android-31"
 
     - name: Instalar Buildozer y Cython
       run: |
+        # Instalar versión específica de Cython y Buildozer :cite[6]
         pip3 install --user --upgrade Cython==0.29.33 virtualenv
         pip3 install --user buildozer
 
-    - name: Compilar APK
+    - name: Compilar APK con Buildozer
       run: |
         export PATH="$HOME/.local/bin:$PATH"
         buildozer -v android debug
