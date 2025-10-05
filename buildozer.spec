@@ -10,9 +10,9 @@ version = 1.0
 requirements = python3, kivy, kivymd, supabase, httpx, websockets
 
 android.permissions = INTERNET
-android.api = 30
+android.api = 31
 android.minapi = 21
-android.ndk_api = 21
+android.ndk = 25b
 
 
 source.include_exts = py,png,jpg,kv,atlas,ico,ttf
@@ -22,4 +22,5 @@ icon.filename = iconoTattoo.ico
 
 [buildozer]
 log_level = 2
+
 
