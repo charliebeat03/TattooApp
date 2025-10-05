@@ -44,11 +44,6 @@ jobs:
         pip3 install --user --upgrade Cython==0.29.33 virtualenv
         pip3 install --user buildozer
 
-    - name: Configurar Buildozer
-      run: |
-        export PATH="$HOME/.local/bin:$PATH"
-        buildozer init
-
     - name: Compilar APK
       run: |
         export PATH="$HOME/.local/bin:$PATH"
