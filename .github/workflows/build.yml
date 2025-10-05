@@ -12,13 +12,16 @@ jobs:
     
     steps:
     - name: Checkout código
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
 
     - name: Instalar dependencias del sistema
-       run: |
-    sudo apt-get update
-    sudo apt-get install -y libtinfo6
-    sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
+      run: |  # <- Esta línea debe estar exactamente así
+        sudo apt-get update
+        # Instala libtinfo6 y crea un enlace simbólico para libtinfo5
+        sudo apt-get install -y libtinfo6
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
+        
+        # Instala el resto de las dependencias necesarias
         sudo apt-get install -y \
           git \
           zip \
@@ -31,7 +34,6 @@ jobs:
           zlib1g-dev \
           libncurses5-dev \
           libncursesw5-dev \
-          libtinfo5 \
           cmake \
           libffi-dev \
           libssl-dev \
