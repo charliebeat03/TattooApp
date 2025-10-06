@@ -44,19 +44,23 @@ jobs:
         export ANDROID_SDK_ROOT="$ANDROID_HOME"
         export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
         
-        # Crear estructura completa de directorios esperada por Buildozer
-        mkdir -p $ANDROID_HOME/tools
+        #  CREAR PRIMERO LA ESTRUCTURA DE DIRECTORIOS - ESTO FALTABA
+        mkdir -p $ANDROID_HOME/tools/bin
+        
+        #  SOLUCIÓN: Crear el directorio destino antes del enlace
+        mkdir -p $ANDROID_HOME/tools/bin
+        
         # Crear enlace simbólico ABSOLUTO para compatibilidad
         ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
-        ln -sf $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/tools/bin
         
         # Verificar instalación
-        echo "Verificando sdkmanager..."
-        ls -la $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager || echo "No encontrado en nueva ubicación"
-        ls -la $ANDROID_HOME/tools/bin/sdkmanager || echo "No encontrado en ubicación antigua"
+        echo " Verificando estructura de directorios..."
+        ls -la $ANDROID_HOME/tools/ || echo "Directorio tools no existe"
+        ls -la $ANDROID_HOME/tools/bin/ || echo "Directorio tools/bin no existe"
+        ls -la $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager || echo "sdkmanager no encontrado en nueva ubicación"
         
         # Aceptar licencias automáticamente
-        yes 2>/dev/null | sdkmanager --licenses || echo "Licencias aceptadas"
+        yes 2>/dev/null | sdkmanager --licenses || echo " Licencias aceptadas"
         
         # Instalar componentes específicos usando la nueva ubicación
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-31" "emulator"
@@ -74,7 +78,7 @@ jobs:
         
         # PASO CRÍTICO: Forzar la actualización del entorno
         buildozer android clean 2>/dev/null || true
-        buildozer android update 2>/dev/null || echo "Update completado"
+        buildozer android update 2>/dev/null || echo " Update completado"
 
     - name: Compilar APK con Buildozer
       run: |
