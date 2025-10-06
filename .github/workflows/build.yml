@@ -1,97 +1,48 @@
 name: Build Android APK
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+on: [push, pull_request]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-android:
+    name: Build para Android
+    runs-on: ubuntu-22.04
     
     steps:
-    - name: Checkout código
+    - name: Checkout del código
       uses: actions/checkout@v4
 
     - name: Instalar dependencias del sistema
       run: |
         sudo apt-get update
-        sudo apt-get install -y libtinfo6
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev automake wget
+        sudo apt-get install -y \
+          autoconf automake cmake gettext libtool pkg-config \
+          libffi-dev libssl-dev python3-pip openjdk-11-jdk \
+          ninja-build build-essential
 
-    - name: Instalar Android Commandline Tools
+    - name: Instalar Cython y herramientas Python
       run: |
-        mkdir -p ~/.android
-        touch ~/.android/repositories.cfg
-        
-        # Limpiar instalaciones anteriores problemáticas
-        rm -rf ~/.buildozer/android/platform/android-sdk/cmdline-tools
-        rm -rf ~/.buildozer/android/platform/android-sdk/tools
-        
-        # Descargar commandlinetools actualizadas
-        wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-        mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
-        unzip -q cmdline-tools.zip -d ~/.buildozer/android/platform/android-sdk/cmdline-tools/
-        mv ~/.buildozer/android/platform/android-sdk/cmdline-tools/cmdline-tools ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest
-        rm cmdline-tools.zip
-
-    - name: Configurar entorno Android SDK
-      run: |
-        export ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
-        export ANDROID_SDK_ROOT="$ANDROID_HOME"
-        export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
-        
-        #  CREAR PRIMERO LA ESTRUCTURA DE DIRECTORIOS - ESTO FALTABA
-        mkdir -p $ANDROID_HOME/tools/bin
-        
-        #  SOLUCIÓN: Crear el directorio destino antes del enlace
-        mkdir -p $ANDROID_HOME/tools/bin
-        
-        # Crear enlace simbólico ABSOLUTO para compatibilidad
-        ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
-        
-        # Verificar instalación
-        echo " Verificando estructura de directorios..."
-        ls -la $ANDROID_HOME/tools/ || echo "Directorio tools no existe"
-        ls -la $ANDROID_HOME/tools/bin/ || echo "Directorio tools/bin no existe"
-        ls -la $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager || echo "sdkmanager no encontrado en nueva ubicación"
-        
-        # Aceptar licencias automáticamente
-        yes 2>/dev/null | sdkmanager --licenses || echo " Licencias aceptadas"
-        
-        # Instalar componentes específicos usando la nueva ubicación
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-31" "emulator"
-
-    - name: Instalar Buildozer y Cython
-      run: |
-        pip3 install --user --upgrade Cython==0.29.33 virtualenv
+        pip3 install --user --upgrade Cython==0.29.36 virtualenv
         pip3 install --user buildozer
 
-    - name: Preparar entorno de compilación
-      run: |
-        export PATH="$HOME/.local/bin:$PATH"
-        export ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
-        export ANDROID_SDK_ROOT="$ANDROID_HOME"
-        
-        # PASO CRÍTICO: Forzar la actualización del entorno
-        buildozer android clean 2>/dev/null || true
-        buildozer android update 2>/dev/null || echo " Update completado"
+    - name: Configurar cache de Buildozer
+      uses: actions/cache@v4
+      with:
+        path: |
+          .buildozer_global
+          .buildozer
+        key: buildozer-cache-${{ hashFiles('buildozer.spec') }}
 
-    - name: Compilar APK con Buildozer
-      run: |
-        export PATH="$HOME/.local/bin:$PATH"
-        export ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
-        export ANDROID_SDK_ROOT="$ANDROID_HOME"
-        
-        # Compilar con log detallado
-        buildozer -v android debug
+    - name: Compilar con Buildozer
+      uses: ArtemSBulgakov/buildozer-action@v1
+      with:
+        command: |
+          buildozer android clean
+          buildozer android debug
+        buildozer_version: stable
+        workdir: .
 
     - name: Subir APK como artefacto
       uses: actions/upload-artifact@v4
       with:
-        name: AzojuanitoP41-APK
-        path: bin/*.apk
-        retention-days: 30
+        name: android-apk
+        path: "**/*.apk"
+        retention-days: 7
