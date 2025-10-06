@@ -1,37 +1,17 @@
-name: Build Android APK
+name: Build Android APK for AzojuanitoP41
+
 on: [push, pull_request]
 
 jobs:
   build-android:
-    name: Build para Android
+    name: Build APK for AzojuanitoP41
     runs-on: ubuntu-22.04
-    
+
     steps:
-    - name: Checkout del código
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Instalar dependencias del sistema
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          autoconf automake cmake gettext libtool pkg-config \
-          libffi-dev libssl-dev python3-pip openjdk-11-jdk \
-          ninja-build build-essential
-
-    - name: Instalar Cython y herramientas Python
-      run: |
-        pip3 install --user --upgrade Cython==0.29.36 virtualenv
-        pip3 install --user buildozer
-
-    - name: Configurar cache de Buildozer
-      uses: actions/cache@v4
-      with:
-        path: |
-          .buildozer_global
-          .buildozer
-        key: buildozer-cache-${{ hashFiles('buildozer.spec') }}
-
-    - name: Compilar con Buildozer
+    - name: Build with Buildozer
       uses: ArtemSBulgakov/buildozer-action@v1
       with:
         command: |
@@ -39,10 +19,11 @@ jobs:
           buildozer android debug
         buildozer_version: stable
         workdir: .
+      options: --user root  # This line fixes the 'chown' error
 
-    - name: Subir APK como artefacto
+    - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
-        name: android-apk
-        path: "**/*.apk"
+        name: AzojuanitoP41-apk
+        path: "bin/*.apk"
         retention-days: 7
