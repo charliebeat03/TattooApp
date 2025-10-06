@@ -13,12 +13,16 @@ android.permissions = INTERNET
 android.api = 31
 android.minapi = 21
 android.ndk = 25b
-android.sdk = 31
 
-# Aceptar licencias automáticamente :cite[2]
-android.accept_sdk_license = True
+# ELIMINAR esta línea que está obsoleta:
+# android.sdk = 31
 
 source.include_exts = py,png,jpg,kv,atlas,ico,ttf
 
 [buildozer]
 log_level = 2
+source.include_exts = py,png,jpg,kv,atlas,ico,ttf
+
+[buildozer]
+log_level = 2
+
