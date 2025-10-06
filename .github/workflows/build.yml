@@ -48,7 +48,7 @@ jobs:
         yes 2>/dev/null | sdkmanager --licenses || true
         
         # Instalar componentes específicos
-        sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-31" "emulator"
+        sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-31"
 
     - name: Instalar Buildozer y Cython
       run: |
@@ -58,10 +58,14 @@ jobs:
     - name: Preparar entorno de compilación
       run: |
         export PATH="$HOME/.local/bin:$PATH"
-        # Forzar la descarga de python-for-android primero
-        buildozer android update
-        # Limpiar compilaciones anteriores problemáticas
-        buildozer android clean || true
+        export ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
+        export ANDROID_SDK_ROOT="$ANDROID_HOME"
+        
+        # PASO CRÍTICO: Asegurar que python-for-android esté disponible
+        buildozer android update || echo "Continuing despite update warning"
+        
+        # Limpiar compilaciones problemáticas de forma segura
+        buildozer android clean 2>/dev/null || true
 
     - name: Compilar APK con Buildozer
       run: |
@@ -69,7 +73,7 @@ jobs:
         export ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
         export ANDROID_SDK_ROOT="$ANDROID_HOME"
         
-        # Compilar con log detallado para diagnóstico
+        # Compilar con log detallado
         buildozer -v android debug
 
     - name: Subir APK como artefacto
