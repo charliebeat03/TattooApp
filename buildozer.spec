@@ -1,28 +1,29 @@
 [app]
+
+# Título y paquete de la aplicación
 title = AzojuanitoP41
 package.name = catalogotatuajes
 package.domain = org.azojuanito
 
+# Ruta del código fuente
 source.dir = .
 source.main = main.py
 
+# Versión
 version = 1.0
+
+# Requisitos (las librerías que usa tu app)
 requirements = python3, kivy, kivymd, supabase, httpx, websockets
 
+# Configuración de Android
 android.permissions = INTERNET
 android.api = 31
 android.minapi = 21
 android.ndk = 25b
 
-# ELIMINAR esta línea que está obsoleta:
-# android.sdk = 31
-
+# Archivos a incluir (asegúrate de que tu icono esté en la misma carpeta)
 source.include_exts = py,png,jpg,kv,atlas,ico,ttf
+icon.filename = iconoTattoo.ico
 
-[buildozer]
-log_level = 2
-source.include_exts = py,png,jpg,kv,atlas,ico,ttf
-
-[buildozer]
-log_level = 2
-
+# Orientación de la pantalla
+orientation = portrait
