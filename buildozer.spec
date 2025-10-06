@@ -1,30 +1,37 @@
 [app]
-# (str) Title of your application
+# Configuración básica de la app
 title = AzojuanitoP41
-
-# (str) Package name
 package.name = azojuanitop41
-
-# (str) Package domain (needed for android/ios packaging)
 package.domain = com.azojuanito
 
-# (str) Source code where the main.py live
+# Directorio fuente
 source.dir = .
 
-# (list) Application requirements
+# Archivo principal
+source.main = main.py
+
+# Requisitos de la aplicación
 requirements = python3, kivy, kivymd, supabase, httpx, websockets
 
-# (int) Target Android API, should be as high as possible.
+# Configuración Android
 android.api = 31
-
-# (int) Minimum API your APK will support.
 android.minapi = 21
-
-# (str) Android NDK version to use
 android.ndk = 25b
-
-# (bool) If True, then automatically accept SDK license agreements.
+android.sdk = 33
 android.accept_sdk_license = True
 
-# (list) Permissions
+# Permisos
 android.permissions = INTERNET
+
+# Icono de la aplicación (asegúrate de tener el archivo)
+icon.filename = %(source.dir)s/icon.png
+
+# Incluir archivos KV y recursos
+source.include_exts = py,png,jpg,kv,atlas,json,txt,ttf
+
+# Log level
+log_level = 2
+
+[buildozer]
+# Configuración de buildozer
+log_level = 2
