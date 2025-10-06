@@ -27,7 +27,6 @@ jobs:
         mkdir -p ~/.android
         touch ~/.android/repositories.cfg
         
-        # Descargar commandlinetools actualizadas
         wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
         mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
         unzip -q cmdline-tools.zip -d ~/.buildozer/android/platform/android-sdk/cmdline-tools/
@@ -40,15 +39,11 @@ jobs:
         export ANDROID_SDK_ROOT="$ANDROID_HOME"
         export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
         
-        # Crear estructura de directorios esperada por Buildozer
         mkdir -p $ANDROID_HOME/tools
         ln -sf $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/tools/bin
         
-        # Aceptar licencias automáticamente
         yes 2>/dev/null | sdkmanager --licenses || true
-        
-        # Instalar componentes específicos
-        sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-31" "emulator"
+        sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-31"
 
     - name: Instalar Buildozer y Cython
       run: |
@@ -61,7 +56,6 @@ jobs:
         export ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
         export ANDROID_SDK_ROOT="$ANDROID_HOME"
         
-        # Limpiar compilación anterior y compilar
         buildozer android clean
         buildozer -v android debug
 
